@@ -1,0 +1,1641 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>Claude Code — Guide</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Claude Code 입문 가이드 — 27장 슬라이드">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/JetBrains/JetBrainsMono/web/css/jetbrains-mono.css">
+<style>
+:root {
+  --bg:           #0E0E11;
+  --bg-soft:      #16161A;
+  --bg-card:      #1A1A1F;
+  --fg:           #EDEAE2;
+  --fg-dim:       #C9C5BC;
+  --muted:        #8E8B85;
+  --dim:          #5A5853;
+  --line:         #26262C;
+  --line-strong:  #3A3A42;
+  --accent:       #E63946;
+  --accent-deep:  #B72D38;
+  --accent-soft:  #1F1216;
+  --code-bg:      #08080A;
+  --code-fg:      #E6E3DB;
+  --code-green:   #7CE38B;
+  --code-pink:    #FF7AC6;
+  --code-yellow:  #FFD66B;
+  --code-blue:    #6FCBFB;
+  --code-mute:    #6B6A66;
+  --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --sans: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont,
+          'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+}
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0;
+  background: #050507;
+  font-family: var(--sans);
+  color: var(--fg);
+  height: 100vh; overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ==== Stage / Frame ==== */
+.viewer {
+  width: 100vw; height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden; position: relative;
+  user-select: none;
+}
+.frame {
+  width: 1280px; height: 720px;
+  background: var(--bg);
+  position: relative;
+  transform-origin: center center;
+  box-shadow: 0 30px 90px rgba(0,0,0,0.7);
+  overflow: hidden;
+}
+
+/* ==== Slide ==== */
+.slide {
+  width: 100%; height: 100%;
+  padding: 64px 80px 56px;
+  display: none;
+  position: relative;
+  flex-direction: column;
+}
+.slide.active { display: flex; }
+
+.s-label {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  letter-spacing: 0.22em;
+  color: var(--muted);
+  font-weight: 500;
+  margin: 0 0 18px;
+  text-transform: uppercase;
+}
+.s-label .n   { color: var(--accent); font-weight: 700; }
+.s-label .sep { color: var(--dim); margin: 0 10px; }
+
+.s-title {
+  font-size: 42px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.18;
+  margin: 0 0 18px;
+  color: var(--fg);
+}
+.s-title.lg { font-size: 52px; }
+.s-title.sm { font-size: 34px; }
+
+.s-rule {
+  width: 36px; height: 2px;
+  background: var(--accent);
+  margin: 0 0 26px;
+}
+
+.s-content { flex: 1; min-height: 0; }
+
+.s-foot {
+  position: absolute;
+  left: 80px; right: 80px; bottom: 28px;
+  display: flex; justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 11.5px; letter-spacing: 0.24em;
+  color: var(--dim);
+  text-transform: uppercase;
+}
+.s-foot .pg .cur { color: var(--accent); }
+
+/* ==== Atoms ==== */
+.acc   { color: var(--accent); }
+.acc-b { color: var(--accent); font-weight: 700; }
+.b     { font-weight: 700; }
+.muted { color: var(--muted); }
+.dim   { color: var(--dim); }
+
+.lead { font-size: 19px; line-height: 1.65; color: var(--fg-dim); }
+.lead.b, .lead strong { font-weight: 700; color: var(--fg); }
+.sub  { font-size: 16px; line-height: 1.6; color: var(--muted); margin-top: 4px; }
+
+/* ==== Cards (minimal: hairline border, subtle bg) ==== */
+.cards { display: grid; gap: 14px; }
+.cards.c2 { grid-template-columns: 1fr 1fr; }
+.cards.c3 { grid-template-columns: 1fr 1fr 1fr; }
+.cards.c4 { grid-template-columns: repeat(4, 1fr); }
+.cards.c5 { grid-template-columns: repeat(5, 1fr); }
+
+.card {
+  padding: 16px 18px;
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  color: var(--fg);
+}
+.card.is-accent {
+  border-color: var(--accent);
+  background: linear-gradient(180deg, rgba(230,57,70,0.08), transparent 60%);
+}
+.card-icon { font-size: 26px; line-height: 1; margin-bottom: 8px; }
+.card-title { font-weight: 800; font-size: 17.5px; margin: 0; letter-spacing: -0.005em; color: var(--fg); }
+.card-desc  { font-size: 14.5px; color: var(--muted); margin: 5px 0 0; line-height: 1.55; }
+
+/* ==== Highlight (left-bar) ==== */
+.hl {
+  border-left: 2px solid var(--accent);
+  padding: 2px 0 2px 16px;
+  font-size: 17px; line-height: 1.6;
+  color: var(--fg-dim);
+}
+.hl strong { font-weight: 700; color: var(--fg); }
+
+/* ==== Bullets ==== */
+.bullets {
+  list-style: none; padding: 0; margin: 12px 0 0;
+  display: flex; flex-direction: column; gap: 10px;
+  font-size: 17px; line-height: 1.6;
+  color: var(--fg-dim);
+}
+.bullets li { padding-left: 18px; position: relative; }
+.bullets li::before {
+  content: ''; position: absolute;
+  left: 0; top: 13px;
+  width: 8px; height: 1px;
+  background: var(--accent);
+}
+
+/* ==== Numbered ==== */
+.numbered { display: flex; flex-direction: column; gap: 18px; margin-top: 14px; }
+.numbered .item { display: flex; gap: 24px; align-items: baseline; }
+.numbered .num {
+  font-family: var(--mono);
+  font-size: 16px; font-weight: 700;
+  color: var(--accent);
+  min-width: 32px;
+  letter-spacing: 0.12em;
+}
+.numbered .txt { font-size: 17px; line-height: 1.5; flex: 1; color: var(--fg-dim); }
+.numbered .txt .sub { font-size: 14.5px; margin-top: 4px; }
+
+/* ==== Code blocks ==== */
+.code {
+  background: var(--code-bg);
+  color: var(--code-fg);
+  font-family: var(--mono);
+  font-size: 14.5px; line-height: 1.75;
+  padding: 16px 20px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  white-space: pre;
+  overflow: hidden;
+}
+.code .u { color: var(--code-green); font-weight: 600; }
+.code .p { color: var(--code-yellow); }
+.code .o { color: var(--code-pink); }
+.code .b { color: var(--code-blue); }
+.code .c { color: var(--code-mute); }
+.code .r { color: var(--accent); }
+
+.tree {
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 14px; line-height: 1.75;
+  padding: 16px 20px;
+  border-radius: 4px;
+  white-space: pre;
+  color: var(--fg-dim);
+}
+.tree .acc { color: var(--accent); }
+.tree .c   { color: var(--code-mute); }
+
+/* ==== Compare ==== */
+.cmp { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.cmp .col {
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 16px 20px;
+}
+.cmp .col.is-accent {
+  border-color: var(--accent);
+  background: linear-gradient(180deg, rgba(230,57,70,0.08), transparent 60%);
+}
+.cmp .col h4 {
+  margin: 0 0 14px; font-size: 17px; font-weight: 700;
+  color: var(--fg);
+}
+.cmp dl {
+  margin: 0; display: grid;
+  grid-template-columns: 78px 1fr;
+  gap: 10px 16px;
+  font-size: 15px; align-items: start;
+}
+.cmp dt { color: var(--muted); padding-top: 1px; font-size: 14px; letter-spacing: 0.03em; }
+.cmp dd { margin: 0; line-height: 1.5; color: var(--fg-dim); }
+.cmp dt:not(:first-of-type), .cmp dd:not(:first-of-type) {
+  border-top: 1px solid var(--line);
+  padding-top: 8px;
+}
+
+/* ==== Command grid ==== */
+.cmd-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 10px 30px;
+}
+.cmd-row {
+  display: grid; grid-template-columns: 120px 1fr;
+  gap: 14px; align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+}
+.cmd-name {
+  font-family: var(--mono);
+  font-weight: 700; font-size: 15px;
+  color: var(--fg);
+}
+.cmd-name .d {
+  display: block; font-weight: 400;
+  font-family: var(--sans); color: var(--muted);
+  font-size: 13px; margin-top: 3px;
+}
+.cmd-code {
+  background: var(--code-bg);
+  color: var(--code-fg);
+  font-family: var(--mono);
+  font-size: 12.5px; line-height: 1.55;
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  white-space: pre; overflow: hidden;
+}
+.cmd-code .p { color: var(--code-yellow); }
+.cmd-code .u { color: var(--code-green); }
+.cmd-code .c { color: var(--code-mute); }
+.cmd-code .b { color: var(--code-blue); }
+
+/* ==== Slash command grid ==== */
+.slash {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 0 40px;
+}
+.slash-row {
+  display: grid; grid-template-columns: 130px 1fr;
+  gap: 16px; align-items: center;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 15.5px;
+  color: var(--fg-dim);
+}
+.slash-row code {
+  font-family: var(--mono);
+  font-weight: 700; font-size: 15px;
+  background: none; padding: 0;
+  color: var(--accent);
+}
+.slash-tip {
+  margin-top: 14px;
+  font-size: 14px;
+  color: var(--muted);
+}
+.slash-tip b { color: var(--accent); }
+
+/* ==== Shortcut table ==== */
+.shortcuts {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 0 40px;
+}
+.shortcut-row {
+  display: grid; grid-template-columns: 150px 1fr;
+  gap: 18px; align-items: start;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 15.5px;
+  color: var(--fg-dim);
+}
+.shortcut-row .k {
+  font-family: var(--mono);
+  font-weight: 700; font-size: 15px;
+  color: var(--accent);
+}
+
+/* ==== Chat bubbles (minimal) ==== */
+.bubbles { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+.bubble {
+  padding: 16px 20px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  font-size: 15.5px; line-height: 1.6;
+  background: var(--bg-soft);
+  color: var(--fg-dim);
+}
+.bubble .who {
+  font-family: var(--mono); font-size: 11px;
+  letter-spacing: 0.22em; color: var(--muted);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+.bubble.claude { border-color: var(--accent); }
+.bubble.claude .who { color: var(--accent); }
+
+/* ==== Process flow ==== */
+.process {
+  display: grid;
+  grid-template-columns: 1fr 22px 1fr 22px 1fr;
+  gap: 6px; align-items: center;
+}
+.proc-box {
+  padding: 16px 18px;
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--fg);
+}
+.proc-box.active {
+  border-color: var(--accent);
+}
+.proc-arrow {
+  color: var(--dim); font-size: 16px;
+  text-align: center;
+  font-family: var(--mono);
+}
+
+/* ==== Step box ==== */
+.step-box {
+  background: var(--bg-soft);
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  padding: 16px 20px;
+}
+.step-box .step-head {
+  font-family: var(--mono);
+  font-size: 12px; letter-spacing: 0.22em;
+  color: var(--accent);
+  margin-bottom: 8px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.step-box .step-title {
+  font-weight: 800; font-size: 19px;
+  margin: 0 0 6px;
+  color: var(--fg);
+}
+.step-box .step-desc {
+  font-size: 15px; color: var(--muted);
+}
+
+/* ==== Prompt input box ==== */
+.prompt-box {
+  position: relative;
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  padding: 20px 22px;
+}
+.prompt-box .head {
+  position: absolute;
+  top: -8px; left: 18px;
+  background: var(--bg);
+  padding: 0 10px;
+  font-family: var(--mono);
+  font-size: 12px; letter-spacing: 0.22em;
+  color: var(--accent);
+  font-weight: 600;
+}
+.prompt-box .pb {
+  font-size: 17px; line-height: 1.7;
+  color: var(--fg);
+}
+.prompt-box code {
+  background: rgba(230,57,70,0.18);
+  padding: 1px 7px;
+  border-radius: 2px;
+  font-family: var(--mono);
+  font-size: 0.9em;
+  color: var(--fg);
+}
+
+/* ==== Inline code chip ==== */
+code.chip {
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  padding: 1px 7px;
+  border-radius: 2px;
+  font-family: var(--mono);
+  font-size: 0.88em;
+  color: var(--accent);
+}
+
+/* ==== Risk badge ==== */
+.badge {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 9.5px; letter-spacing: 0.22em;
+  padding: 2px 7px;
+  border: 1px solid var(--accent);
+  border-radius: 2px;
+  color: var(--accent);
+  font-weight: 700;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+/* ==== MCP diagram ==== */
+.mcp-wrap {
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  gap: 24px;
+}
+.mcp-diagram {
+  position: relative;
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  height: 300px;
+}
+.mcp-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.mcp-node {
+  position: absolute;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 7px 14px;
+  font-weight: 600; font-size: 13px;
+  text-align: center;
+  white-space: nowrap;
+  color: var(--fg);
+}
+.mcp-node.hub {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  padding: 10px 18px;
+}
+.mcp-node.hub .lbl {
+  font-family: var(--mono);
+  font-size: 9.5px; letter-spacing: 0.22em;
+  color: var(--accent);
+  margin-bottom: 2px;
+  font-weight: 600;
+}
+.mcp-side {
+  display: flex; flex-direction: column; gap: 10px;
+}
+.mcp-side .title {
+  font-family: var(--mono);
+  font-size: 10.5px; letter-spacing: 0.22em;
+  color: var(--muted);
+  margin-bottom: 2px;
+  text-transform: uppercase;
+}
+
+/* ==== Plugin package ==== */
+.plugin-pkg {
+  border: 1px dashed var(--accent);
+  border-radius: 4px;
+  padding: 18px;
+  position: relative;
+  margin-top: 22px;
+}
+.plugin-pkg .pkg-label {
+  position: absolute;
+  top: -8px; left: 18px;
+  background: var(--bg);
+  padding: 0 10px;
+  font-family: var(--mono);
+  font-size: 10.5px; letter-spacing: 0.22em;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* ==== Cover (slide 1) ==== */
+.cover {
+  flex: 1;
+  display: flex; flex-direction: column;
+  align-items: flex-start; justify-content: center;
+  padding: 0;
+}
+.cover-eyebrow {
+  font-family: var(--mono);
+  font-size: 12px; letter-spacing: 0.34em;
+  color: var(--accent);
+  font-weight: 600;
+  margin-bottom: 28px;
+  text-transform: uppercase;
+}
+.cover-title {
+  font-size: 104px; font-weight: 800;
+  margin: 0 0 18px;
+  letter-spacing: -0.035em;
+  line-height: 1;
+  color: var(--fg);
+}
+.cover-sub {
+  font-size: 24px;
+  color: var(--fg-dim);
+  margin: 0 0 34px;
+  letter-spacing: -0.005em;
+}
+.cover-tag {
+  border-left: 2px solid var(--accent);
+  padding: 8px 0 8px 20px;
+  font-weight: 700;
+  font-size: 19px;
+  color: var(--fg);
+}
+.cover-meta {
+  margin-top: 56px;
+  display: flex; gap: 28px;
+  font-family: var(--mono);
+  font-size: 12px; letter-spacing: 0.22em;
+  color: var(--dim);
+  text-transform: uppercase;
+}
+.cover-meta span + span::before {
+  content: '·'; margin-right: 18px; color: var(--accent);
+}
+
+/* ==== Nav controls ==== */
+.nav {
+  position: fixed;
+  bottom: 16px; left: 50%;
+  transform: translateX(-50%);
+  display: flex; gap: 2px;
+  background: rgba(20,20,24,0.96);
+  border: 1px solid #2a2a2e;
+  border-radius: 30px;
+  padding: 5px 6px;
+  z-index: 1000;
+  font-family: var(--mono);
+  align-items: center;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+}
+.nav button {
+  background: none; border: none;
+  cursor: pointer;
+  padding: 7px 12px;
+  font-size: 13px;
+  border-radius: 20px;
+  font-family: inherit;
+  color: var(--fg-dim);
+  letter-spacing: 0.05em;
+}
+.nav button:hover { background: rgba(230,57,70,0.14); color: var(--accent); }
+.nav button:disabled { opacity: 0.28; cursor: not-allowed; }
+.nav .counter {
+  font-size: 11px; color: var(--muted);
+  min-width: 72px; text-align: center;
+  letter-spacing: 0.14em;
+}
+.nav .counter .cur { color: var(--accent); }
+.nav .sep {
+  width: 1px; height: 16px;
+  background: #2e2e34; margin: 0 4px;
+}
+
+/* ==== TOC overlay ==== */
+.toc-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.78);
+  display: none;
+  z-index: 2000;
+  align-items: center; justify-content: center;
+  padding: 40px;
+}
+.toc-overlay.open { display: flex; }
+.toc-panel {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  max-width: 920px; width: 100%;
+  max-height: 80vh; overflow-y: auto;
+  border-radius: 6px;
+  padding: 28px 30px;
+  position: relative;
+  color: var(--fg);
+}
+.toc-panel h3 {
+  margin: 0 0 18px;
+  font-size: 16px; font-weight: 800;
+  letter-spacing: 0.01em;
+}
+.toc-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+.toc-grid a {
+  text-decoration: none;
+  color: var(--fg-dim);
+  padding: 11px 14px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex; align-items: center; gap: 12px;
+  transition: all 0.12s;
+}
+.toc-grid a:hover {
+  background: var(--bg-soft);
+  border-color: var(--accent);
+  color: var(--fg);
+}
+.toc-grid a .n {
+  font-family: var(--mono);
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 11.5px;
+  min-width: 24px;
+  letter-spacing: 0.08em;
+}
+.toc-close {
+  position: absolute; top: 14px; right: 18px;
+  background: none; border: none;
+  font-size: 22px; cursor: pointer;
+  color: var(--muted); line-height: 1;
+}
+.toc-hint {
+  margin-top: 18px;
+  font-size: 11px; color: var(--muted);
+  font-family: var(--mono);
+  letter-spacing: 0.06em;
+}
+.toc-hint kbd {
+  display: inline-block;
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 1px 6px;
+  margin: 0 3px;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--fg-dim);
+}
+
+@media print {
+  body { background: var(--bg); }
+  .nav, .toc-overlay { display: none !important; }
+  .viewer { display: block; height: auto; overflow: visible; }
+  .frame {
+    transform: none !important;
+    width: 1280px !important; height: 720px !important;
+    page-break-after: always;
+    box-shadow: none;
+  }
+  .slide { display: flex !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="viewer" id="viewer">
+  <div class="frame" id="frame">
+
+    <!-- ===== SLIDE 01 — INTRO ===== -->
+    <section class="slide" data-i="1" data-toc="Claude Code">
+      <div class="cover">
+        <div class="cover-eyebrow">Claude Code · Guide</div>
+        <h1 class="cover-title">Claude Code</h1>
+        <p class="cover-sub">터미널에서 돌아가는 <span class="acc-b">AI 개발 파트너</span></p>
+        <div class="cover-tag">"코딩을 배우는 게 아니라, AI에게 <span class="acc">시키는</span> 것"</div>
+        <div class="cover-meta">
+          <span>27 SLIDES</span>
+          <span>Intro · Terminal · Skill · MCP</span>
+          <span>→ Arrow keys</span>
+        </div>
+      </div>
+      <div class="s-foot">
+        <span>Claude Code Intro</span>
+        <span class="pg"><span class="cur">01</span> / 27</span>
+      </div>
+    </section>
+
+    <!-- ===== SLIDE 02 — Claude Code 란 ===== -->
+    <section class="slide" data-i="2" data-toc="Claude Code 란">
+      <div class="s-label"><span class="n">02</span><span class="sep">/</span>Intro</div>
+      <h2 class="s-title">Claude Code 란</h2>
+      <div class="s-rule"></div>
+      <div class="s-content">
+        <p class="lead"><strong>한 줄 정의</strong> — 터미널에서 돌아가는 AI 개발 파트너 (Claude 모델 기반 <span class="acc-b">Agent</span>)</p>
+        <p class="sub">Agent = 스스로 도구를 써서 끝까지 작업을 완수하는 AI</p>
+
+        <div class="cards c3" style="margin-top:20px;">
+          <div class="card">
+            <div class="card-icon">🌐</div>
+            <p class="card-title">ChatGPT</p>
+            <p class="card-desc">브라우저 / 챗봇<br>대화 중심</p>
+          </div>
+          <div class="card">
+            <div class="card-icon">💻</div>
+            <p class="card-title">Cursor</p>
+            <p class="card-desc">IDE / 보조<br>코드 작성 도움</p>
+          </div>
+          <div class="card is-accent">
+            <div class="card-icon">⌨️</div>
+            <p class="card-title">Claude Code</p>
+            <p class="card-desc">터미널 / Agent<br>실제로 실행</p>
+          </div>
+        </div>
+
+        <div class="hl" style="margin-top:22px;">
+          <strong>예시:</strong> "이 폴더 정리해줘" → 파일 분류·이동·이름 변경까지 <span class="acc-b">실제 수행</span>
+        </div>
+      </div>
+      <div class="s-foot"><span>Claude Code Intro</span><span class="pg"><span class="cur">02</span> / 27</span></div>
+    </section>
+
+    <!-- ===== SLIDE 03 — 챗봇과의 차이 ===== -->
+    <section class="slide" data-i="3" data-toc="챗봇과의 차이">
+      <div class="s-label"><span class="n">03</span><span class="sep">/</span>Difference</div>
+      <h2 class="s-title">챗봇과의 차이</h2>
+      <div class="s-rule"></div>
+      <div class="s-content">
+        <div class="cmp">
+          <div class="col">
+            <h4>챗봇 <span class="muted" style="font-weight:400;">(ChatGPT, Gemini)</span></h4>
+            <dl>
+              <dt>접근 범위</dt><dd>브라우저 안의 대화창</dd>
+              <dt>행동 방식</dt><dd>질문 → 답변 (1턴)</dd>
+              <dt>결과물</dt><dd>텍스트 응답, 생성 이미지 반환</dd>
+            </dl>
+          </div>
+          <div class="col is-accent">
+            <h4><span class="acc-b">Coding Agent</span> <span class="muted" style="font-weight:400;">(Claude Code, Codex)</span></h4>
+            <dl>
+              <dt>접근 범위</dt><dd>파일 시스템 + 웹 + 도구</dd>
+              <dt>행동 방식</dt><dd>계획 → 도구 실행 → 반복</dd>
+              <dt>결과물</dt><dd>텍스트 응답·코드·이미지 파일·실행 결과 등</dd>
+            </dl>
+          </div>
+        </div>
+
+        <div class="hl" style="margin-top:22px;">
+          <strong>예:</strong> "경쟁사 3곳 리서치 → 요약표 → 슬랙 #team 에 전송" — <span class="acc-b">한 번 지시로 끝까지</span>
+        </div>
+      </div>
+      <div class="s-foot"><span>Claude Code Intro</span><span class="pg"><span class="cur">03</span> / 27</span></div>
+    </section>
+
+    <!-- ===== SLIDE 04 — 사용 패턴 ===== -->
+    <section class="slide" data-i="4" data-toc="사용 패턴 (직군별)">
+      <div class="s-label"><span class="n">04</span><span class="sep">/</span>Use Cases</div>
+      <h2 class="s-title">사용 패턴 (직군별)</h2>
+      <div class="s-rule"></div>
+      <div class="s-content">
+        <div class="cards c5" style="margin-top:28px;">
+          <div class="card" style="text-align:center;">
+            <div class="card-icon">👷</div>
+            <p class="card-title">개발자</p>
+            <p class="card-desc">버그 수정 PR, 배포 스크립트</p>
+          </div>
+          <div class="card" style="text-align:center;">
+            <div class="card-icon">📢</div>
+            <p class="card-title">마케터</p>
+            <p class="card-desc">랜딩페이지, 이메일 템플릿</p>
+          </div>
+          <div class="card" style="text-align:center;">
+            <div class="card-icon">🎨</div>
+            <p class="card-title">디자이너</p>
+            <p class="card-desc">웹 프로토타입, 디자인 토큰</p>
+          </div>
+          <div class="card" style="text-align:center;">
+            <div class="card-icon">📊</div>
+            <p class="card-title">사업기획</p>
+            <p class="card-desc">데이터 분석 스크립트, 대시보드</p>
+          </div>
+          <div class="card" style="text-align:center;">
+            <div class="card-icon">✍️</div>
+            <p class="card-title">크리에이터</p>
+            <p class="card-desc">뉴스레터 자동화, 간단한 웹앱</p>
+          </div>
+        </div>
+
+        <div class="hl" style="margin-top:30px;">
+          <strong>핵심:</strong> "코딩을 배우는 게 아니라, AI에게 <span class="acc-b">시키는</span> 것"
+        </div>
+      </div>
+      <div class="s-foot"><span>Claude Code Intro</span><span class="pg"><span class="cur">04</span> / 27</span></div>
+    </section>
+
+    <!-- ===== SLIDE 05 — 마음가짐 ===== -->
+    <section class="slide" data-i="5" data-toc="마음가짐">
+      <div class="s-label"><span class="n">05</span><span class="sep">/</span>Mindset</div>
+      <h2 class="s-title">마음가짐</h2>
+      <div class="s-rule"></div>
+      <div class="s-content">
+        <ul class="bullets">
+          <li>컴퓨터의 <strong>모든 작업</strong>을 AI에게 맡긴다고 생각하기</li>
+          <li>몰라도 된다 — 어차피 Claude Code에게 물어보면 됨</li>
+        </ul>
+
+        <div class="hl" style="margin-top:24px;">
+          <div style="font-size:20px;font-weight:800;color:var(--fg);">재능이 아니라 <span class="acc">호기심</span>의 차이다.</div>
+          <div style="font-family:var(--mono);font-size:12px;letter-spacing:0.22em;color:var(--accent);margin-top:8px;font-weight:600;text-transform:uppercase;">Mindset</div>
+        </div>
+
+        <div class="bubbles">
+          <div class="bubble">
+            <div class="who">User</div>
+            나 이거 잘 모르는데 쉽게 설명해줘
+          </div>
+          <div class="bubble claude">
+            <div class="who">Claude</div>
+            그럼요. 먼저 개념부터 비유로 설명드릴게요 — 터미널은 컴퓨터에게 글로 말 거는 창문이에요...
+          </div>
+        </div>
+      </div>
+      <div class="s-foot"><span>Claude Code Intro</span><span class="pg"><span class="cur">05</span> / 27</span></div>
+    </section>
+
+    <!-- ===== SLIDE 06 — 터미널 기초 ===== -->
+    <section class="slide" data-i="6" data-toc="터미널 기초">
+      <div class="s-label"><span class="n">06</span><span class="sep">/</span>Terminal</div>
+      <h2 class="s-title">터미널 기초</h2>
+      <div class="s-rule"></div>
+      <div class="s-content">
+        <p class="lead b">컴퓨터와 글로 대화하는 창.</p>
+        <p class="lead" style="margin-top:6px;"><strong>macOS</strong> — Terminal&nbsp;/&nbsp;iTerm&nbsp;/&nbsp;Ghostty</p>
+        <p class="lead" style="margin-top:2px;"><strong>Windows</strong> — PowerShell</p>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:24px;">
+<div class="code"><span class="u">you@mac</span> ~ $ <span class="p">pwd</span>
+/Users/you
+<span class="u">you@mac</span> ~ $ <span class="p">ls</span>
+Desktop Documents Downloads
+<span class="u">you@mac</span> ~ $ <span class="p">cd</span> Documents</div>
+
+<div class="tree">/
+└── Users/
+     └── <span class="acc">you/</span>            <span class="c">← ~ (홈)</span>
+          ├── Desktop/
+          ├── Documents/
+          │    └── memo.txt
+          └── Downloads/</div>
+        </div>
+      </div>
+      <div class="s-foot"><span>Claude Code Intro</span><span class="pg"><span class="cur">06</span> / 27</span></div>
+    </section>
+
+    <!-- ===== SLIDE 07 — 터미널 기본 명령어 ===== -->
+    <section class="slide" data-i="7" data-toc="터미널 기본 명령어">
+      <div class="s-label"><span class="n">07</span><span class="sep">/</span>Commands</div>
+      <h2 class="s-title">터미널 기본 명령어</h2>
+      <div class="s-rule"></div>
+      <div class="s-content">
+        <div class="cmd-grid">
+          <div class="cmd-row">
+            <div class="cmd-name">pwd<span class="d">현재 위치</span></div>
+            <div class="cmd-code"><span class="p">$ pwd</span>
+/Users/you</div>
+          </div>
+          <div class="cmd-row">
+            <div class="cmd-name">ls<span class="d">폴더 내용</span></div>
+            <div class="cmd-code"><span class="p">$ ls</span>
+Desktop Documents</div>
+          </div>
+          <div class="cmd-row">
+            <div class="cmd-name">cd &lt;경로&gt;<span class="d">폴더 이동</span></div>
+            <div class="cmd-code"><span class="p">$ cd Documents</span>
+<span class="p">$ pwd</span>
+/Users/you/Documents</div>
+          </div>
+          <div class="cmd-row">
+            <div class="cmd-name">mkdir &lt;이름&gt;<span class="d">새 폴더</span></div>
+            <div class="cmd-code"><span class="p">$ mkdir demo</span>
+<span class="p">$ ls</span>
+demo</div>
+          </div>
+          <div class="cmd-row">
+            <div class="cmd-name">rm &lt;파일&gt;<span class="d">파일 삭제</span></div>
+            <div class="cmd-code"><span class="p">$ rm memo.txt</span>
+<span class="c">(삭제됨)</span></div>
+          </div>
+          <div class="cmd-row">
+            <div class="cmd-name">cd ~<span class="d">홈으로</span></div>
+            <div class="cmd-code"><span class="p">$ cd ~</span>
+<span class="p">$ pwd</span>
+/Users/you</div>
+          </div>
+          <div class="cmd-row">
+            <div class="cmd-name">open .<span class="d">폴더 열기 (mac)</span></div>
+            <div class="cmd-code"><span class="p">$ open .</span>
+<span class="c">(Finder)</span></div>
+          </div>
+          <div class="cmd-row">
+            <div class="cmd-name">explorer .<span class="d">폴더 열기 (win)</span></div>
+            <div class="cmd-code"><span class="b">&gt; explorer .</span>
+<span class="c">(탐색기)</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="s-foot"><span>Claude Code Intro</span><span class="pg"><span class="cur">07</span> / 27</span></div>
+    </section>
+
+    <!-- ===== SLIDE 08 — 실습: 프로젝트 ===== -->
+    <section class="slide" data-i="8" data-toc="실습: 프로젝트 만들고 Claude Code 시작">
+      <div class="s-label"><span class="n">08</span><span class="sep">/</span>Practice</div>
+      <h2 class="s-title">실습: 프로젝트 만들고 Claude Code 시작</h2>
+      <div class="s-rule"></div>
+      <div class="s-content">
+<div class="code" style="margin-top:8px;font-size:14.5px;line-height:1.9;padding:22px 26px;"><span class="u">you@mac</span> ~ $ <span class="p">cd</span> ~
+<span class="u">you@mac</span> ~ $ <span class="p">mkdir</span> admin-night-demo
+<span class="u">you@mac</span> ~ $ <span class="p">cd</span> admin-night-demo
+<span class="u">you@mac</span> admin-night-demo $ <span class="p">pwd</span>
+/Users/you/admin-night-demo
+<span class="u">you@mac</span> admin-night-demo $ <span class="p">ls</span>
+<span class="c">(빈 폴더)</span>
+<span class="u">you@mac</span> admin-night-demo $ <span class="p">claude</span>
+<span class="r">▸ Welcome to Claude Code — what do you want to build?</span></div>
+      </div>
+      <div class="s-foot"><span>Claude Code Intro</span><span class="pg"><span class="cur">08</span> / 27</span></div>
+    </section>
+
+    <!-- ===== SLIDE 09 — 입력 단축키 ===== -->
+    <section class="slide" data-i="9" data-toc="Claude Code 입력 단축키">
+      <div class="s-label"><span class="n">09</span><span class="sep">/</span>Shortcuts</div>
+      <h2 class="s-title">Claude Code 입력 단축키</h2>
+      <div class="s-rule"></div>
+      <div class="s-content">
+        <div class="shortcuts">
+          <div class="shortcut-row"><div class="k">Enter</div><div>메시지 전송</div></div>
+          <div class="shortcut-row"><div class="k">Shift + Enter</div><div>줄바꿈 (긴 프롬프트)</div></div>
+          <div class="shortcut-row"><div class="k">ESC × 2</div><div>입력창 비우기</div></div>
+          <div class="shortcut-row"><div class="k">/</div><div>슬래시 명령 (예: /model)</div></div>
+          <div class="shortcut-row"><div class="k">!</div><div>쉘 명령 (mac: !open . / win: !explorer .)</div></div>
+          <div class="shortcut-row"><div class="k">파일 드래그</div><div>외부 파일 참조시키기</div></div>
+          <div class="shortcut-row"><div class="k">Ctrl + C × 2</div><div>세션 종료</div></div>
+          <div class="shortcut-row"><div class="k">@</div><div>파일·폴더 멘션</div></div>
+        </div>
+      </div>
+      <div class="s-foot"><span>Claude Code Intro</span><span class="pg"><span class="cur">09</span> / 27</span></div>
+    </section>
+
+    <!-- ===== SLIDE 10 — 슬래시 명령 ===== -->
+    <section class="slide" data-i="10" data-toc="꼭 알아둘 슬래시 명령">
+      <div class="s-label"><span class="n">10</span><span class="sep">/</span>Slash Commands</div>
+      <h2 class="s-title">꼭 알아둘 슬래시 명령</h2>
+      <div class="s-rule"></div>
+      <div class="s-content">
+        <div class="slash">
+          <div class="slash-row"><code>/help</code><div>전체 명령 목록 보기</div></div>
+          <div class="slash-row"><code>/clear</code><div>대화 히스토리 비우기 (컨텍스트 리셋)</div></div>
+          <div class="slash-row"><code>/model</code><div>모델 변경 (Sonnet ↔ Opus)</div></div>
+          <div class="slash-row"><code>/init</code><div>프로젝트에 <code class="chip">CLAUDE.md</code> 자동 생성</div></div>
+          <div class="slash-row"><code>/agents</code><div>서브 에이전트 목록 / 관리</div></div>
+          <div class="slash-row"><code>/mcp</code><div>연결된 MCP 서버 상태 확인</div></div>
+          <div class="slash-row"><code>/login</code><div>계정 로그인 / 전환</div></div>
+          <div class="slash-row"><code>/cost</code><div>현재 세션 토큰·비용 확인</div></div>
+          <div class="slash-row"><code>/compact</code><div>대화 요약해서 컨텍스트 압축</div></div>
+          <div class="slash-row"><code>/resume</code><div>이전 세션 이어서 시작</div></div>
+        </div>
+        <p class="slash-tip"><b>TIP</b> — 입력창에 <code class="chip">/</code> 만 처도 사용 가능한 명령이 자동완성됨.</p>
+      </div>
+      <div class="s-foot"><span>Claude Code Intro</span><span class="pg"><span class="cur">10</span> / 27</span></div>
+    </section>
+
+    <!-- ===== SLIDE 11 — 기억 심어주기 ===== -->
+    <section class="slide" data-i="11" data-toc="Claude Code에게 기억 심어주기 (CLAUDE.md)">
+      <div class="s-label"><span class="n">11</span><span class="sep">/</span>Memory</div>
+      <h2 class="s-title sm">Claude Code에게 기억 심어주기 (CLAUDE.md)</h2>
+      <div class="s-rule"></div>
+      <div class="s-content">
+        <p class="lead"><strong>세션은 기억이 없다</strong> — 매번 <span class="acc-b">CLAUDE.md</span>를 읽어 맥락을 복원함</p>
+
+        <div style="display:grid;grid-template-columns:1.15fr 1fr;gap:24px;margin-top:18px;align-items:start;">
+          <div>
+            <div class="process">
+              <div class="proc-box">세션 시작</div>
+              <div class="proc-arrow">→</div>
+              <div class="proc-box active">CLAUDE.md 읽음</div>
+              <div class="proc-arrow">→</div>
+              <div class="proc-box">작업 수행</div>
+            </div>
+            <p class="lead" style="margin-top:18px;font-size:17px;"><code class="chip">/init</code> 으로 자동 생성. 프로젝트 가이드·규칙·용어를 적어둔다.</p>
+            <p class="sub" style="margin-top:4px;">한 번 써두면 매번 맥락을 다시 설명할 필요 없음.</p>
+          </div>
+          <div>
+            <div style="font-family:var(--mono);font-size:12px;letter-spacing:0.22em;color:var(--muted);margin-bottom:8px;text-transform:uppercase;">예시 — CLAUDE.md</div>
+<div class="code"># 내 소개 페이지 프로젝트
+
+- 이름: 홍길동
+- 역할: 교육 기획자
+- 페이지 톤: 깔끔하고 친근하게</div>
+          </div>
+        </div>
+      </div>
+      <div class="s-foot"><span>Claude Code Intro</span><span class="pg"><span class="cur">11</span> / 27</span></div>
+    </section>
+
+    <!-- ===== SLIDE 12 — 실습: 소개 페이지 ===== -->
+    <section class="slide" data-i="12" data-toc="실습: 내 정보로 소개 페이지 만들기">
+      <div class="s-label"><span class="n">12</span><span class="sep">/</span>Practice</div>
+      <h2 class="s-title">실습: 내 정보로 소개 페이지 만들기</h2>
+      <div class="s-rule"></div>
+      <div class="s-content">
+        <div class="numbered" style="margin-top:24px;">
+          <div class="item">
+            <div class="num">01</div>
+            <div class="txt">본인의 정보 / 이력서 / 신상 정보를 프로젝트 폴더에 넣기
+              <div class="sub">txt · pdf · image — 무엇이든 OK</div>
+            </div>
+          </div>
+          <div class="item">
+            <div class="num">02</div>
+            <div class="txt"><code class="chip">/init</code> — "여기 있는 나의 신상 정보를 읽어서 넣어주세요"
+              <div class="sub">별도 파일이 없으면 프롬프트에 직접 입력해도 OK</div>
+            </div>
+          </div>
+          <div class="item">
+            <div class="num">03</div>
+            <div class="txt">"내 소개 웹 페이지를 하나 만들어서 띄워주세요"</div>
+          </div>
+        </div>
+      </div>
+      <div class="s-foot"><span>Claude Code Intro</span><span class="pg"><span class="cur">12</span> / 27</span></div>
+    </section>
+
+    <!-- ===== SLIDE 13 — 구성요소 ===== -->
+    <section class="slide" data-i="13" data-toc="Claude Code의 구성요소">
+      <div class="s-label"><span class="n">13</span><span class="sep">/</span>Components</div>
+      <h2 class="s-title">Claude Code의 구성요소</h2>
+      <div class="s-rule"></div>
+      <div class="s-content">
+        <p class="lead">Claude Code를 구성하는 5가지 요소 — 각각 독립적이며, 플러그인은 이것들을 묶는 패키지</p>
+
+        <div class="cards c5" style="margin-top:26px;">
+          <div class="card">
+            <p class="card-title">Skills</p>
+            <p class="card-desc">반복 작업을 재사용 지시서로</p>
+          </div>
+          <div class="card">
+            <p class="card-title">Agents</p>
+            <p class="card-desc">특정 역할 전문 서브 에이전트</p>
+          </div>
+          <div class="card">
+            <p class="card-title">Hooks</p>
+            <p class="card-desc">이벤트 발생 시 자동 실행</p>
+          </div>
+          <div class="card">
+            <p class="card-title">MCP</p>
+            <p class="card-desc">외부 도구·데이터 연결</p>
+          </div>
+          <div class="card is-accent">
+            <p class="card-title">플러그인</p>
+            <p class="card-desc">위 요소들을 묶는 패키지</p>
+          </div>
+        </div>
+      </div>
+      <div class="s-foot"><span>Claude Code Intro</span><span class="pg"><span class="cur">13</span> / 27</span></div>
+    </section>
+
+    <!-- ===== SLIDE 14 — 기본 구조 ===== -->
+    <section class="slide" data-i="14" data-toc="Claude Code의 기본 구조">
+      <div class="s-label"><span class="n">14</span><span class="sep">/</span>Structure</div>
+      <h2 class="s-title">Claude Code의 기본 구조</h2>
+      <div class="s-rule"></div>
+      <div class="s-content">
+        <p class="lead">두 레벨로 나뉜다 — <span class="acc-b">프로젝트 안에서도 유저 레벨의 Skill을 항상 쓸 수 있다.</span></p>
+
+        <div class="cmp" style="margin-top:18px;">
+          <div class="col">
+            <h4>User Level &nbsp;<code class="chip">~/.claude/</code></h4>
+            <p class="muted" style="font-size:14.5px;margin:0 0 12px;">모든 프로젝트에서 공통으로 쓰는 Skill</p>
+<div class="tree" style="font-size:13.5px;">~/.claude/
+  ├── CLAUDE.md
+  ├── skills/
+  └── settings.json</div>
+          </div>
+          <div class="col is-accent">
+            <h4>Project Level &nbsp;<code class="chip">./.claude/</code></h4>
+            <p class="muted" style="font-size:14.5px;margin:0 0 12px;">이 프로젝트에서만 쓰는 Skill</p>
+<div class="tree" style="font-size:13.5px;">my-project/
+  ├── CLAUDE.md
+  └── .claude/
+       ├── skills/
+       └── settings.json</div>
+          </div>
+        </div>
+
+        <div class="hl" style="margin-top:16px;">
+          공통 Skill(유저 레벨) + 프로젝트 전용 Skill → <strong>합쳐서 사용.</strong>
+        </div>
+      </div>
+      <div class="s-foot"><span>Claude Code Intro</span><span class="pg"><span class="cur">14</span> / 27</span></div>
+    </section>
+
+    <!-- ===== SLIDE 15 — 왜 Skill ===== -->
+    <section class="slide" data-i="15" data-toc="왜 Skill을 써야 하는가">
+      <div class="s-label"><span class="n">15</span><span class="sep">/</span>Why Skill</div>
+      <h2 class="s-title">왜 Skill을 써야 하는가</h2>
+      <div class="s-rule"></div>
+      <div class="s-content">
+        <div class="hl">
+          자주 쓰는 프롬프트를 저장해두는 <span class="acc-b">즐겨찾기</span> — <code class="chip">/명령어</code> 한 줄로 다시 실행되는 나만의 매크로.
+        </div>
+
+        <div class="cmp" style="margin-top:22px;">
+          <div class="col">
+            <div style="font-family:var(--mono);font-size:12px;letter-spacing:0.22em;color:var(--muted);margin-bottom:8px;text-transform:uppercase;">Before</div>
+            <p class="b" style="font-size:19px;margin:4px 0 8px;color:var(--fg);">매번 긴 프롬프트 반복</p>
+            <p class="muted" style="font-size:14.5px;line-height:1.6;margin:0;">"요구사항 정리해서 표로 뽑고, 이모지 빼고, 마크다운으로, 한국어로..." (매번)</p>
+          </div>
+          <div class="col is-accent">
+            <div style="font-family:var(--mono);font-size:10.5px;letter-spacing:0.22em;color:var(--accent);margin-bottom:6px;text-transform:uppercase;font-weight:600;">After</div>
+            <p class="b" style="font-size:19px;margin:4px 0 8px;color:var(--fg);"><code class="chip">/my-skill</code> 한 번</p>
+            <p style="font-size:14.5px;line-height:1.6;margin:0;color:var(--fg-dim);">한 번 정의해두면 재사용. 품질·일관성 자동 보장.</p>
+          </div>
+        </div>
+
+        <div class="hl" style="margin-top:22px;">
+          <strong>Rule of thumb</strong> — <span class="acc-b">3번 이상 반복되면 Skill로 만들어라</span>
+        </div>
+      </div>
+      <div class="s-foot"><span>Claude Code Intro</span><span class="pg"><span class="cur">15</span> / 27</span></div>
+    </section>
+
+    <!-- ===== SLIDE 16 — Skill 만드는 법 ===== -->
+    <section class="slide" data-i="16" data-toc="Skill 만드는 법">
+      <div class="s-label"><span class="n">16</span><span class="sep">/</span>Make Skill</div>
+      <h2 class="s-title">Skill 만드는 법</h2>
+      <div class="s-rule"></div>
+      <div class="s-content">
+        <div class="step-box">
+          <div class="step-head">Step 01 — 자연어로 요청</div>
+          <p class="step-title">"○○ 하는 Skill 하나 만들어줘"</p>
+          <p class="step-desc">반복 작업을 설명만 해주면 Claude가 SKILL.md 구조로 자동 생성</p>
+        </div>
+
+<div class="code" style="margin-top:18px;font-size:15px;">.claude/
+└── skills/
+     └── my-skill/
+          ├── SKILL.md      <span class="c">← 설명 + 트리거 + 지시사항</span>
+          ├── examples/
+          └── references/</div>
+
+        <p class="lead" style="margin-top:18px;font-size:16px;color:var(--muted);"><span class="acc">💡 참고</span> — <code class="chip">skill-creator</code> 플러그인을 사용하면 더 정밀하게 만들어줍니다.</p>
+      </div>
+      <div class="s-foot"><span>Claude Code Intro</span><span class="pg"><span class="cur">16</span> / 27</span></div>
+    </section>
+
+    <!-- ===== SLIDE 17 — 실습: 카카오톡 ===== -->
+    <section class="slide" data-i="17" data-toc="실습: 카카오톡 페르소나 분석기">
+      <div class="s-label"><span class="n">17</span><span class="sep">/</span>Practice</div>
+      <h2 class="s-title">실습: 카카오톡 페르소나 분석기</h2>
+      <div class="s-rule"></div>
+      <div class="s-content">
+        <p class="lead">내 카톡 대화로 페르소나를 분석하고 웹 페이지로 확인해보자.</p>
+
+        <div class="numbered" style="margin-top:14px;">
+          <div class="item">
+            <div class="num">01</div>
+            <div class="txt">카카오톡 대화를 <code class="chip">csv</code> 로 내보내기</div>
+          </div>
+          <div class="item">
+            <div class="num">02</div>
+            <div class="txt">해당 파일을 <strong>Claude Code 창에 드래그</strong>하고 <code class="chip">"이 파일을 files/에 저장해줘"</code> 라고 명령하기</div>
+          </div>
+          <div class="item">
+            <div class="num">03</div>
+            <div class="txt">"해당 파일로 본인(OOO)의 페르소나를 분석해줘"</div>
+          </div>
+          <div class="item">
+            <div class="num">04</div>
+            <div class="txt">"이 분석 정보를 웹 페이지로 보여줘"</div>
+          </div>
+        </div>
+      </div>
+      <div class="s-foot"><span>Claude Code Intro</span><span class="pg"><span class="cur">17</span> / 27</span></div>
+    </section>
+
+    <!-- ===== SLIDE 18 — 카카오톡 채팅 내보내기 ===== -->
+    <section class="slide" data-i="18" data-toc="참고 — 카카오톡 채팅 내보내기">
+      <div class="s-label"><span class="n">18</span><span class="sep">/</span>Reference · Kakao Export</div>
+      <h2 class="s-title sm">참고 — 카카오톡 채팅 내보내기</h2>
+      <div class="s-rule"></div>
+      <div class="s-content">
+        <p class="lead">카카오톡 PC 버전에서 대화를 텍스트로 내보낼 수 있음.</p>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:20px;">
+          <div style="background:var(--bg-soft);border:1px solid var(--line);border-radius:4px;padding:18px 20px;position:relative;min-height:240px;">
+            <div style="font-family:var(--mono);font-size:10.5px;letter-spacing:0.22em;color:var(--muted);margin-bottom:12px;text-transform:uppercase;">Chatroom</div>
+            <div style="border:1px solid var(--accent);border-radius:3px;padding:6px 12px;font-size:12.5px;color:var(--accent);display:inline-block;font-weight:600;">Chatroom Settings</div>
+            <ul style="list-style:none;padding:0;margin:14px 0 0;font-size:12px;color:var(--muted);line-height:2;">
+              <li>· Invite friends</li>
+              <li>· Create Chatroom Again</li>
+              <li>· Chatroom Archives</li>
+              <li>· Boards</li>
+              <li>· Briefing Board</li>
+              <li>· Chatbot (beta)</li>
+              <li>· Notifications</li>
+              <li>· <span class="acc">Chatroom Settings</span> ←</li>
+            </ul>
+            <div style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:11.5px;color:var(--accent);">①</div>
+          </div>
+
+          <div style="background:var(--bg-soft);border:1px solid var(--line);border-radius:4px;padding:18px 20px;position:relative;min-height:240px;">
+            <div style="font-family:var(--mono);font-size:10.5px;letter-spacing:0.22em;color:var(--muted);margin-bottom:12px;text-transform:uppercase;">Chatroom Settings</div>
+            <div style="font-size:13px;color:var(--fg);margin-bottom:4px;font-weight:700;">Save Messages as Documents</div>
+            <p style="font-size:11.5px;color:var(--muted);margin:0 0 12px;line-height:1.55;">With Chat Storage, you can save all of your chats as text files and even chat data, including photos, videos and files, via Talk Cloud.</p>
+            <div style="display:flex;gap:8px;">
+              <div style="border:1px solid var(--accent);border-radius:3px;padding:5px 12px;font-size:11.5px;color:var(--accent);font-weight:600;">Save as a text file</div>
+              <div style="border:1px solid var(--line);border-radius:3px;padding:5px 12px;font-size:11.5px;color:var(--muted);">Chat Storage</div>
+            </div>
+            <div style="font-size:13px;color:var(--fg);margin-top:18px;font-weight:700;">Manage Chatroom Data</div>
+            <p style="font-size:11.5px;color:var(--muted);margin:4px 0 8px;">Manage chat messages and data.</p>
+            <div style="border:1px solid var(--line);border-radius:3px;padding:4px 12px;font-size:11.5px;color:var(--muted);display:inline-block;">Manage</div>
+            <div style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:11.5px;color:var(--accent);">②</div>
+          </div>
+        </div>
+      </div>
+      <div class="s-foot"><span>Claude Code Intro</span><span class="pg"><span class="cur">18</span> / 27</span></div>
+    </section>
+
+    <!-- ===== SLIDE 19 — analyze-chat ===== -->
+    <section class="slide" data-i="19" data-toc="실습: 스킬 만들기 — analyze-chat">
+      <div class="s-label"><span class="n">19</span><span class="sep">/</span>Practice · Skillify</div>
+      <h2 class="s-title">실습: 스킬 만들기 — analyze-chat</h2>
+      <div class="s-rule"></div>
+      <div class="s-content">
+        <p class="lead">방금 한 실습을 <strong>Skill로 만들어 재사용</strong>하기.</p>
+
+        <div class="prompt-box" style="margin-top:30px;">
+          <div class="head">Prompt 입력</div>
+          <p class="pb">"스킬이름: <code>analyze-chat</code>, 분석할 파일 경로, 분석할 상대 이름을 입력으로 받는 SKILL을 만들어 줘"</p>
+        </div>
+
+        <p class="lead" style="margin-top:28px;">→ 다음부터는 <code class="chip">/analyze-chat</code> 한 줄로 같은 작업을 재실행.</p>
+      </div>
+      <div class="s-foot"><span>Claude Code Intro</span><span class="pg"><span class="cur">19</span> / 27</span></div>
+    </section>
+
+    <!-- ===== SLIDE 20 — 스킬 개선 01 ===== -->
+    <section class="slide" data-i="20" data-toc="실습 — 스킬 개선 01: MBTI 분석 추가">
+      <div class="s-label"><span class="n">20</span><span class="sep">/</span>Practice · Improve 01</div>
+      <h2 class="s-title">실습 — 스킬 개선 01: MBTI 분석 추가</h2>
+      <div class="s-rule"></div>
+      <div class="s-content">
+        <p class="lead">만든 스킬에 <strong><span class="acc-b">MBTI 분석</span></strong>을 덧붙여 리포트를 풍부하게 만든다.</p>
+
+        <div class="prompt-box" style="margin-top:26px;">
+          <div class="head">Prompt 입력</div>
+          <p class="pb">"<code>https://www.16personalities.com/ko/성격-유형</code> 에 접속해서 각 성격 유형 링크를 들어가 확인한 후 <code>analyze-chat</code> 에 MBTI 분석을 추가해줘"</p>
+        </div>
+
+        <p class="lead" style="margin-top:24px;">→ Claude가 웹에서 16가지 유형 정보를 직접 수집해 스킬에 주입.</p>
+      </div>
+      <div class="s-foot"><span>Claude Code Intro</span><span class="pg"><span class="cur">20</span> / 27</span></div>
+    </section>
+
+    <!-- ===== SLIDE 21 — 스킬 개선 02 ===== -->
+    <section class="slide" data-i="21" data-toc="실습 — 스킬 개선 02: 공유용 이미지 카드">
+      <div class="s-label"><span class="n">21</span><span class="sep">/</span>Practice · Improve 02</div>
+      <h2 class="s-title">실습 — 스킬 개선 02: 공유용 이미지 카드</h2>
+      <div class="s-rule"></div>
+      <div class="s-content">
+        <p class="lead">결과를 <span class="acc-b">SNS · 팀 채널에 바로 공유</span>할 수 있는 한 장짜리 카드로 확장.</p>
+
+        <div class="prompt-box" style="margin-top:26px;">
+          <div class="head">Prompt 입력</div>
+          <p class="pb">"결과 HTML과 함께 요약 카드 이미지도 뽑아주도록 스킬을 수정해"</p>
+        </div>
+
+        <p class="lead" style="margin-top:24px;">→ 분석 리포트(HTML) + 요약 카드(PNG) 두 벌이 한 번에 생성.</p>
+      </div>
+      <div class="s-foot"><span>Claude Code Intro</span><span class="pg"><span class="cur">21</span> / 27</span></div>
+    </section>
+
+    <!-- ===== SLIDE 22 — Modes ===== -->
+    <section class="slide" data-i="22" data-toc="Claude Code 모드">
+      <div class="s-label"><span class="n">22</span><span class="sep">/</span>Modes</div>
+      <h2 class="s-title">Claude Code 모드</h2>
+      <div class="s-rule"></div>
+      <div class="s-content">
+        <div class="cards c2">
+          <div class="card">
+            <p class="card-title" style="font-family:var(--mono);font-size:17px;">default</p>
+            <p class="card-desc">기본값. 파일 수정·명령 실행 전마다 사용자에게 권한을 묻는다.</p>
+          </div>
+          <div class="card">
+            <p class="card-title" style="font-family:var(--mono);font-size:17px;">plan</p>
+            <p class="card-desc">코드 변경 없이 계획만 세움. 읽기·탐색만 가능, 실제 수정은 차단.</p>
+          </div>
+          <div class="card">
+            <p class="card-title" style="font-family:var(--mono);font-size:17px;">accept edits on</p>
+            <p class="card-desc">파일 수정은 자동 승인. 중요한 명령은 여전히 확인. 반복 작업에 편함.</p>
+          </div>
+          <div class="card is-accent">
+            <p class="card-title" style="font-family:var(--mono);font-size:17px;">bypass permissions<span class="badge">RISK</span></p>
+            <p class="card-desc">모든 권한 묻기 생략. 빠르지만 위험 — 신뢰할 수 있는 작업에만.</p>
+          </div>
+        </div>
+
+        <div class="hl" style="margin-top:18px;">
+          권한을 자주 물어봐서 번거롭다면 <span class="acc-b">accept edits on</span>으로 — <code class="chip">Shift + Tab</code> 으로 모드 순환 변경.
+        </div>
+        <div class="hl" style="margin-top:10px;">
+          아예 안 묻게 하려면 실행 시 <code class="chip">claude --dangerously-skip-permissions</code> (bypass) 옵션 추가.
+        </div>
+      </div>
+      <div class="s-foot"><span>Claude Code Intro</span><span class="pg"><span class="cur">22</span> / 27</span></div>
+    </section>
+
+    <!-- ===== SLIDE 23 — 남의 Skill ===== -->
+    <section class="slide" data-i="23" data-toc="더 알면 좋을 내용 — 남의 Skill 가져다 쓰기">
+      <div class="s-label"><span class="n">23</span><span class="sep">/</span>Deeper · NPX Skills</div>
+      <h2 class="s-title sm">더 알면 좋을 내용 — 남의 Skill 가져다 쓰기</h2>
+      <div class="s-rule"></div>
+      <div class="s-content">
+        <p class="lead">공개된 Skill들을 <span class="acc-b">앱스토어처럼</span> 골라서 내 Claude Code에 설치할 수 있다.</p>
+        <p class="lead" style="margin-top:6px;font-size:17px;"><code class="chip">vercel-labs/skills</code> — 공유된 Skill 모음 · <span class="muted">github.com/vercel-labs/skills</span></p>
+
+<div class="code" style="margin-top:24px;font-size:15px;line-height:1.8;"><span class="c"># find-skills 스킬 설치</span>
+<span class="p">$</span> npx skills add vercel-labs/skills --skill find-skills -a claude-code -y</div>
+
+        <p class="lead" style="margin-top:22px;">→ 이 한 줄이 Skill을 내 환경에 추가해준다. 설치 후 <code class="chip">/find-skills</code> 로 바로 사용.</p>
+      </div>
+      <div class="s-foot"><span>Claude Code Intro</span><span class="pg"><span class="cur">23</span> / 27</span></div>
+    </section>
+
+    <!-- ===== SLIDE 24 — MCP ===== -->
+    <section class="slide" data-i="24" data-toc="더 알면 좋을 내용: MCP">
+      <div class="s-label"><span class="n">24</span><span class="sep">/</span>Deeper · MCP</div>
+      <h2 class="s-title">더 알면 좋을 내용: MCP</h2>
+      <div class="s-rule"></div>
+      <div class="s-content">
+        <p class="lead">MCP = 외부 서비스와 Claude Code를 잇는 <span class="acc-b">다리</span>.</p>
+
+        <div class="mcp-wrap" style="margin-top:14px;">
+          <div class="mcp-diagram">
+            <svg class="mcp-svg" viewBox="0 0 400 300" preserveAspectRatio="none">
+              <line x1="80" y1="60" x2="200" y2="150" stroke="#E63946" stroke-width="1.2"/>
+              <line x1="320" y1="60" x2="200" y2="150" stroke="#E63946" stroke-width="1.2"/>
+              <line x1="200" y1="170" x2="200" y2="240" stroke="#E63946" stroke-width="1.2"/>
+            </svg>
+            <div class="mcp-node" style="top:24px;left:22px;">Slack</div>
+            <div class="mcp-node" style="top:24px;right:22px;">Google Calendar</div>
+            <div class="mcp-node hub" style="top:50%;left:50%;transform:translate(-50%,-50%);">
+              <div class="lbl">Hub</div>
+              Claude Code
+            </div>
+            <div class="mcp-node" style="bottom:22px;left:50%;transform:translateX(-50%);">Notion</div>
+          </div>
+
+          <div class="mcp-side">
+            <div class="title">Example Prompts</div>
+            <div style="background:var(--bg-soft);border:1px solid var(--line);padding:12px 16px;border-radius:4px;">
+              <div style="font-family:var(--mono);font-size:11px;letter-spacing:0.22em;color:var(--accent);font-weight:600;text-transform:uppercase;">Prompt 01</div>
+              <div style="font-size:16px;margin-top:6px;color:var(--fg-dim);">"Slack 최근 메시지 읽고 오늘 이슈 요약해줘"</div>
+            </div>
+            <div style="background:var(--bg-soft);border:1px solid var(--line);padding:12px 16px;border-radius:4px;">
+              <div style="font-family:var(--mono);font-size:11px;letter-spacing:0.22em;color:var(--accent);font-weight:600;text-transform:uppercase;">Prompt 02</div>
+              <div style="font-size:16px;margin-top:6px;color:var(--fg-dim);">"캘린더에 내일 오후 3시 미팅 추가해줘"</div>
+            </div>
+            <p class="lead" style="margin-top:6px;font-size:15.5px;">→ Claude Code가 <span class="acc-b">진짜 업무 도구</span>가 되는 순간.</p>
+          </div>
+        </div>
+      </div>
+      <div class="s-foot"><span>Claude Code Intro</span><span class="pg"><span class="cur">24</span> / 27</span></div>
+    </section>
+
+    <!-- ===== SLIDE 25 — 플러그인 ===== -->
+    <section class="slide" data-i="25" data-toc="더 알면 좋을 내용: 플러그인">
+      <div class="s-label"><span class="n">25</span><span class="sep">/</span>Deeper · Plugin</div>
+      <h2 class="s-title">더 알면 좋을 내용: 플러그인</h2>
+      <div class="s-rule"></div>
+      <div class="s-content">
+        <p class="lead">플러그인 = Skills · Agents · Hooks · MCP를 한 덩어리로 <span class="acc-b">패키징</span>한 배포 단위.</p>
+
+        <div class="plugin-pkg">
+          <div class="pkg-label">Plugin Package</div>
+          <div class="cards c4">
+            <div class="card">
+              <p class="card-title">Skills</p>
+              <p class="card-desc">재사용 지시서 묶음</p>
+            </div>
+            <div class="card">
+              <p class="card-title">Agents</p>
+              <p class="card-desc">전문 서브 에이전트</p>
+            </div>
+            <div class="card">
+              <p class="card-title">Hooks</p>
+              <p class="card-desc">이벤트 자동화</p>
+            </div>
+            <div class="card">
+              <p class="card-title">MCP</p>
+              <p class="card-desc">외부 도구 연결</p>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1.4fr;gap:14px;margin-top:18px;">
+          <div class="hl">
+            <div style="font-family:var(--mono);font-size:12px;letter-spacing:0.22em;color:var(--accent);text-transform:uppercase;font-weight:600;">One install</div>
+            <div class="b" style="font-size:16px;margin-top:6px;color:var(--fg);">한 번의 설치 → 기능 세트 전체 추가</div>
+          </div>
+          <div style="background:var(--bg-soft);border:1px solid var(--line);border-radius:4px;padding:14px 18px;">
+            <div style="font-family:var(--mono);font-size:12px;letter-spacing:0.22em;color:var(--muted);text-transform:uppercase;">Example — 내 페르소나 분석</div>
+            <div style="font-size:14.5px;margin-top:6px;line-height:1.6;color:var(--fg-dim);">내 페르소나 분석 플러그인 설치 → <code class="chip">analyze-kakao</code> · <code class="chip">analyze-slack</code> · <code class="chip">analyze-big5</code> 등 여러 Skill + Slack MCP 설정이 <strong>한 패키지로</strong></div>
+          </div>
+        </div>
+      </div>
+      <div class="s-foot"><span>Claude Code Intro</span><span class="pg"><span class="cur">25</span> / 27</span></div>
+    </section>
+
+    <!-- ===== SLIDE 26 — Unclear ===== -->
+    <section class="slide" data-i="26" data-toc="아직 내가 만들 것이 명확하지 않다면?">
+      <div class="s-label"><span class="n">26</span><span class="sep">/</span>Prompting · Unclear</div>
+      <h2 class="s-title">아직 내가 만들 것이 명확하지 않다면?</h2>
+      <div class="s-rule"></div>
+      <div class="s-content">
+        <p class="lead"><span class="acc-b">AI와 대화</span>하면서 문제를 같이 구체화하자.</p>
+
+        <ul class="bullets" style="margin-top:18px;">
+          <li>첫 질문이 완벽할 필요 없음 — AI를 <strong>말동무</strong>로 사용</li>
+          <li>문제 정의부터 같이 → 무엇을 만들지가 점점 뚜렷해짐</li>
+          <li>내가 뭘 모르는지 모를 때 — <strong>질문을 던져달라</strong>고 부탁</li>
+        </ul>
+
+        <div class="cards c2" style="margin-top:24px;">
+          <div style="background:var(--bg-soft);border:1px solid var(--line);padding:14px 18px;border-radius:4px;">
+            <div style="font-family:var(--mono);font-size:11px;letter-spacing:0.22em;color:var(--accent);font-weight:600;text-transform:uppercase;">Prompt</div>
+            <div style="font-size:16.5px;margin-top:6px;color:var(--fg-dim);">"내가 뭘 모르는지 모르겠어. 질문을 던져줘."</div>
+          </div>
+          <div style="background:var(--bg-soft);border:1px solid var(--line);padding:14px 18px;border-radius:4px;">
+            <div style="font-family:var(--mono);font-size:11px;letter-spacing:0.22em;color:var(--accent);font-weight:600;text-transform:uppercase;">Prompt</div>
+            <div style="font-size:16.5px;margin-top:6px;color:var(--fg-dim);">"내가 하려는 게 이건데, 빠진 관점 있을까?"</div>
+          </div>
+        </div>
+      </div>
+      <div class="s-foot"><span>Claude Code Intro</span><span class="pg"><span class="cur">26</span> / 27</span></div>
+    </section>
+
+    <!-- ===== SLIDE 27 — Clear ===== -->
+    <section class="slide" data-i="27" data-toc="내가 만들 것이 명확하다면?">
+      <div class="s-label"><span class="n">27</span><span class="sep">/</span>Prompting · Clear</div>
+      <h2 class="s-title">내가 만들 것이 명확하다면?</h2>
+      <div class="s-rule"></div>
+      <div class="s-content">
+        <p class="lead"><code class="chip">/plan</code> 으로 <span class="acc-b">계획 문서</span>부터 뽑고 시작하자.</p>
+
+        <div class="process" style="margin-top:18px;">
+          <div class="proc-box" style="text-align:left;padding:16px 18px;">
+            <div style="font-family:var(--mono);font-size:11px;letter-spacing:0.22em;color:var(--accent);text-transform:uppercase;font-weight:600;">Step 01</div>
+            <div class="b" style="font-size:16px;margin-top:6px;color:var(--fg);"><code class="chip">/plan</code> 으로 계획 요청</div>
+            <div style="margin-top:6px;font-size:14px;color:var(--muted);">무엇을·어떻게·어떤 순서로 할지 문서화</div>
+          </div>
+          <div class="proc-arrow">→</div>
+          <div class="proc-box active" style="text-align:left;padding:16px 18px;">
+            <div style="font-family:var(--mono);font-size:11px;letter-spacing:0.22em;color:var(--accent);text-transform:uppercase;font-weight:600;">Step 02</div>
+            <div class="b" style="font-size:16px;margin-top:6px;color:var(--fg);">계획 검토·보완</div>
+            <div style="margin-top:6px;font-size:14px;color:var(--muted);">빠진 것, 순서, 가정을 먼저 바로잡기</div>
+          </div>
+          <div class="proc-arrow">→</div>
+          <div class="proc-box" style="text-align:left;padding:16px 18px;">
+            <div style="font-family:var(--mono);font-size:11px;letter-spacing:0.22em;color:var(--accent);text-transform:uppercase;font-weight:600;">Step 03</div>
+            <div class="b" style="font-size:16px;margin-top:6px;color:var(--fg);">실행</div>
+            <div style="margin-top:6px;font-size:14px;color:var(--muted);">계획대로 Claude가 한 스텝씩 작업</div>
+          </div>
+        </div>
+
+        <div class="hl" style="margin-top:24px;">
+          <div style="font-family:var(--mono);font-size:12px;letter-spacing:0.22em;color:var(--accent);text-transform:uppercase;font-weight:600;">Why</div>
+          <div style="font-size:17px;margin-top:6px;color:var(--fg-dim);">복잡할수록 <strong>계획이 결과 품질을 좌우</strong>한다. 바로 실행 ❌ → 계획 먼저 ✅</div>
+        </div>
+      </div>
+      <div class="s-foot"><span>Claude Code Intro</span><span class="pg"><span class="cur">27</span> / 27</span></div>
+    </section>
+
+  </div>
+</div>
+
+<!-- ===== Navigation ===== -->
+<div class="nav">
+  <button id="navHome" title="처음 (Home)">⤒</button>
+  <button id="navPrev" title="이전 (←)">‹ Prev</button>
+  <span class="counter" id="counter"><span class="cur">01</span> / 27</span>
+  <button id="navNext" title="다음 (→)">Next ›</button>
+  <button id="navEnd" title="마지막 (End)">⤓</button>
+  <span class="sep"></span>
+  <button id="navToc" title="목차 (Esc)">목차</button>
+</div>
+
+<!-- ===== TOC overlay ===== -->
+<div class="toc-overlay" id="tocOverlay">
+  <div class="toc-panel">
+    <button class="toc-close" id="tocClose" aria-label="닫기">×</button>
+    <h3>목차</h3>
+    <div class="toc-grid" id="tocGrid"></div>
+    <div class="toc-hint">
+      <kbd>←</kbd> <kbd>→</kbd> 이전·다음 · <kbd>Space</kbd> 다음 · <kbd>Home</kbd>/<kbd>End</kbd> 처음·끝 · <kbd>Esc</kbd> 목차 · <kbd>F</kbd> 전체화면
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const slides   = Array.from(document.querySelectorAll('.slide'));
+  const total    = slides.length;
+  const counter  = document.getElementById('counter');
+  const frame    = document.getElementById('frame');
+  const viewer   = document.getElementById('viewer');
+  const tocGrid  = document.getElementById('tocGrid');
+  const tocOver  = document.getElementById('tocOverlay');
+  const btnPrev  = document.getElementById('navPrev');
+  const btnNext  = document.getElementById('navNext');
+  const btnHome  = document.getElementById('navHome');
+  const btnEnd   = document.getElementById('navEnd');
+  const btnToc   = document.getElementById('navToc');
+  const btnClose = document.getElementById('tocClose');
+
+  let current = 0;
+
+  function pad(n) { return String(n).padStart(2, '0'); }
+
+  function show(idx) {
+    if (idx < 0) idx = 0;
+    if (idx >= total) idx = total - 1;
+    slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+    counter.innerHTML = '<span class="cur">' + pad(idx + 1) + '</span> / ' + pad(total);
+    current = idx;
+    btnPrev.disabled = idx === 0;
+    btnNext.disabled = idx === total - 1;
+    const hash = '#' + (idx + 1);
+    if (location.hash !== hash) history.replaceState(null, '', hash);
+  }
+
+  function resize() {
+    const W = window.innerWidth;
+    const H = window.innerHeight;
+    const scale = Math.min(W / 1280, (H - 64) / 720);
+    frame.style.transform = 'scale(' + scale + ')';
+  }
+
+  function buildToc() {
+    slides.forEach((s, i) => {
+      const title = s.getAttribute('data-toc') || ('Slide ' + (i + 1));
+      const a = document.createElement('a');
+      a.innerHTML = '<span class="n">' + pad(i + 1) + '</span>' + title;
+      a.onclick = (e) => { e.preventDefault(); show(i); tocOver.classList.remove('open'); };
+      tocGrid.appendChild(a);
+    });
+  }
+
+  btnPrev.onclick  = () => show(current - 1);
+  btnNext.onclick  = () => show(current + 1);
+  btnHome.onclick  = () => show(0);
+  btnEnd.onclick   = () => show(total - 1);
+  btnToc.onclick   = () => tocOver.classList.toggle('open');
+  btnClose.onclick = () => tocOver.classList.remove('open');
+  tocOver.onclick  = (e) => { if (e.target === tocOver) tocOver.classList.remove('open'); };
+
+  document.addEventListener('keydown', (e) => {
+    const inToc = tocOver.classList.contains('open');
+    if (inToc) {
+      if (e.key === 'Escape') tocOver.classList.remove('open');
+      return;
+    }
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { show(current + 1); e.preventDefault(); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { show(current - 1); e.preventDefault(); }
+    else if (e.key === 'Home') { show(0); e.preventDefault(); }
+    else if (e.key === 'End')  { show(total - 1); e.preventDefault(); }
+    else if (e.key === 'Escape') { tocOver.classList.toggle('open'); }
+    else if (e.key === 'f' || e.key === 'F') {
+      if (document.fullscreenElement) document.exitFullscreen();
+      else document.documentElement.requestFullscreen?.();
+    }
+  });
+
+  let tx = 0, ty = 0;
+  viewer.addEventListener('touchstart', (e) => {
+    tx = e.changedTouches[0].clientX; ty = e.changedTouches[0].clientY;
+  }, {passive: true});
+  viewer.addEventListener('touchend', (e) => {
+    const dx = e.changedTouches[0].clientX - tx;
+    const dy = e.changedTouches[0].clientY - ty;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+      if (dx < 0) show(current + 1);
+      else show(current - 1);
+    }
+  }, {passive: true});
+
+  window.addEventListener('resize', resize);
+  window.addEventListener('hashchange', () => {
+    const n = parseInt(location.hash.slice(1), 10);
+    if (!isNaN(n)) show(n - 1);
+  });
+
+  buildToc();
+  resize();
+  const initial = parseInt(location.hash.slice(1), 10);
+  show(!isNaN(initial) ? initial - 1 : 0);
+})();
+</script>
+
+</body>
+</html>
