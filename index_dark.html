@@ -10,26 +10,25 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/JetBrains/JetBrainsMono/web/css/jetbrains-mono.css">
 <style>
 :root {
-  /* ── Light palette ── */
-  --bg:           #FBFAF6;   /* slide background — warm off-white */
-  --bg-soft:      #F3F0E8;   /* cards / subtle surface */
-  --bg-card:      #FFFFFF;   /* elevated card */
-  --fg:           #1A1A1F;   /* primary text */
-  --fg-dim:       #3D3D44;   /* body copy */
-  --muted:        #6B6A66;   /* secondary text */
-  --dim:          #A5A29A;   /* faint text / borders */
-  --line:         #E3DFD4;   /* hairline */
-  --line-strong:  #C9C5BC;
-  --accent:       #D62839;   /* slightly deeper red for contrast on light */
-  --accent-deep:  #9E1C2A;
-  --accent-soft:  #FBE7E9;   /* very light red tint for accent backgrounds */
-  --code-bg:      #2A2A30;   /* dark code block stays for readability */
-  --code-fg:      #EDEAE2;
+  --bg:           #0E0E11;
+  --bg-soft:      #16161A;
+  --bg-card:      #1A1A1F;
+  --fg:           #EDEAE2;
+  --fg-dim:       #C9C5BC;
+  --muted:        #8E8B85;
+  --dim:          #5A5853;
+  --line:         #26262C;
+  --line-strong:  #3A3A42;
+  --accent:       #E63946;
+  --accent-deep:  #B72D38;
+  --accent-soft:  #1F1216;
+  --code-bg:      #08080A;
+  --code-fg:      #E6E3DB;
   --code-green:   #7CE38B;
   --code-pink:    #FF7AC6;
   --code-yellow:  #FFD66B;
   --code-blue:    #6FCBFB;
-  --code-mute:    #8E8B85;
+  --code-mute:    #6B6A66;
   --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
   --sans: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont,
           'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
@@ -37,7 +36,7 @@
 * { box-sizing: border-box; }
 html, body {
   margin: 0; padding: 0;
-  background: #E8E5DC;  /* outer stage — warm gray so frame pops */
+  background: #050507;
   font-family: var(--sans);
   color: var(--fg);
   height: 100vh; overflow: hidden;
@@ -57,7 +56,7 @@ html, body {
   background: var(--bg);
   position: relative;
   transform-origin: center center;
-  box-shadow: 0 24px 60px rgba(26,26,31,0.18), 0 2px 8px rgba(26,26,31,0.06);
+  box-shadow: 0 30px 90px rgba(0,0,0,0.7);
   overflow: hidden;
 }
 
@@ -140,7 +139,7 @@ html, body {
 }
 .card.is-accent {
   border-color: var(--accent);
-  background: linear-gradient(180deg, rgba(214,40,57,0.07), rgba(214,40,57,0.01) 80%);
+  background: linear-gradient(180deg, rgba(230,57,70,0.08), transparent 60%);
 }
 .card-icon { font-size: 26px; line-height: 1; margin-bottom: 8px; }
 .card-title { font-weight: 800; font-size: 17.5px; margin: 0; letter-spacing: -0.005em; color: var(--fg); }
@@ -225,7 +224,7 @@ html, body {
 }
 .cmp .col.is-accent {
   border-color: var(--accent);
-  background: linear-gradient(180deg, rgba(214,40,57,0.07), rgba(214,40,57,0.01) 80%);
+  background: linear-gradient(180deg, rgba(230,57,70,0.08), transparent 60%);
 }
 .cmp .col h4 {
   margin: 0 0 14px; font-size: 17px; font-weight: 700;
@@ -416,12 +415,12 @@ html, body {
   color: var(--fg);
 }
 .prompt-box code {
-  background: rgba(214,40,57,0.14);
+  background: rgba(230,57,70,0.18);
   padding: 1px 7px;
   border-radius: 2px;
   font-family: var(--mono);
   font-size: 0.9em;
-  color: var(--accent-deep);
+  color: var(--fg);
 }
 
 /* ==== Inline code chip ==== */
@@ -569,14 +568,14 @@ code.chip {
   bottom: 16px; left: 50%;
   transform: translateX(-50%);
   display: flex; gap: 2px;
-  background: rgba(255,255,255,0.96);
-  border: 1px solid var(--line);
+  background: rgba(20,20,24,0.96);
+  border: 1px solid #2a2a2e;
   border-radius: 30px;
   padding: 5px 6px;
   z-index: 1000;
   font-family: var(--mono);
   align-items: center;
-  box-shadow: 0 8px 24px rgba(26,26,31,0.12);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
 }
 .nav button {
   background: none; border: none;
@@ -588,7 +587,7 @@ code.chip {
   color: var(--fg-dim);
   letter-spacing: 0.05em;
 }
-.nav button:hover { background: rgba(214,40,57,0.10); color: var(--accent); }
+.nav button:hover { background: rgba(230,57,70,0.14); color: var(--accent); }
 .nav button:disabled { opacity: 0.28; cursor: not-allowed; }
 .nav .counter {
   font-size: 11px; color: var(--muted);
@@ -598,15 +597,13 @@ code.chip {
 .nav .counter .cur { color: var(--accent); }
 .nav .sep {
   width: 1px; height: 16px;
-  background: var(--line-strong); margin: 0 4px;
+  background: #2e2e34; margin: 0 4px;
 }
 
 /* ==== TOC overlay ==== */
 .toc-overlay {
   position: fixed; inset: 0;
-  background: rgba(26,26,31,0.38);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  background: rgba(0,0,0,0.78);
   display: none;
   z-index: 2000;
   align-items: center; justify-content: center;
